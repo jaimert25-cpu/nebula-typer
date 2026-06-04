@@ -12,8 +12,8 @@ html,body{height:100%;overflow:hidden;background:#03030c;color:#fff;
   background:radial-gradient(130% 100% at 50% 0%, #140a30 0%, #07061c 50%, #03030c 100%);}
 #scene{position:absolute;inset:0;display:block;}
 
-#ksink{position:absolute;top:-100px;left:0;width:10px;height:10px;opacity:0;border:0;
-  background:transparent;color:transparent;font-size:16px;}
+#ksink{position:fixed;top:6px;left:6px;width:1px;height:1px;opacity:0;border:0;padding:0;
+  background:transparent;color:transparent;font-size:16px;z-index:-1;}
 
 /* ---------------- HUD ---------------- */
 #hud{position:absolute;top:0;left:0;right:0;z-index:5;pointer-events:none;
