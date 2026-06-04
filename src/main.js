@@ -22,19 +22,24 @@ function focusSink(){ if (isTouch){ try { ksink.focus({ preventScroll: true }); 
 // ----------------------------------------------------- TECLADO
 window.addEventListener('keydown', e => {
   const k = e.key;
-  if (k === 'Escape' || k === 'p' || k === 'P'){
+  // PAUSA: Espacio o Escape (teclas que NO son letras -> no chocan con el tecleo)
+  if (k === ' ' || k === 'Escape'){
+    e.preventDefault();
     if (Game.state === 'playing') Game.pause();
     else if (Game.state === 'paused') Game.resume();
     return;
   }
-  if (k === 'm' || k === 'M'){ Audio.init(); Audio.setMuted(!Audio.muted); return; }
+  // OVERDRIVE: Shift (durante la partida)
+  if (k === 'Shift'){ if (Game.state === 'playing') Game.tryOverdrive(); return; }
+  // MUTE: M, pero solo fuera de la partida para no "comerse" la letra m
+  if ((k === 'm' || k === 'M') && Game.state !== 'playing'){ Audio.init(); Audio.setMuted(!Audio.muted); return; }
+  // CONFIRMAR: Enter
   if (k === 'Enter'){
     if (Game.state === 'menu' || Game.state === 'over'){ Game.beginCountdown(); focusSink(); }
     else if (Game.state === 'paused') Game.resume();
     return;
   }
-  if (k === ' '){ if (Game.state === 'playing'){ e.preventDefault(); Game.tryOverdrive(); } return; }
-  // letras: en desktop aqui; en movil las captura el sink
+  // LETRAS (desktop): tecleo. En movil lo captura el sink.
   if (!isTouch && k.length === 1 && /[a-zA-Z]/.test(k)){ Game.onLetter(k.toLowerCase()); e.preventDefault(); }
 }, { passive: false });
 

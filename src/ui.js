@@ -53,7 +53,7 @@ export function updateHUD(G){
   el.comboM.style.width = (G.combo > 0 ? Math.max(0, Math.min(1, G.comboTimer / CONFIG.comboWindow)) * 100 : 0) + '%';
   el.focusM.style.width = (G.focus / CONFIG.focusMax) * 100 + '%';
   if (G.overdrive > 0){ el.focusHint.textContent = 'OVERDRIVE'; el.focusHint.className = 'ready'; }
-  else if (G.focus >= CONFIG.focusMax){ el.focusHint.textContent = 'ESPACIO ▶'; el.focusHint.className = 'ready'; }
+  else if (G.focus >= CONFIG.focusMax){ el.focusHint.textContent = 'SHIFT ▶'; el.focusHint.className = 'ready'; }
   else { el.focusHint.textContent = 'FOCUS'; el.focusHint.className = ''; }
   let s = '';
   for (let i = 0; i < G.maxShields; i++) s += '<span class="' + (i < G.shields ? '' : 'off') + '">◆</span>';
