@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NEBULA TYPER — Pro Edition</title>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="scene"></canvas>
+    <input id="ksink" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-hidden="true">
+
+    <div id="hud">
+      <div class="col">
+        <div><span class="lbl">SCORE</span><div class="big" id="score">0</div></div>
+        <div id="combo"></div>
+        <div class="meter" id="comboMeter"><i></i></div>
+      </div>
+      <div class="col c">
+        <div style="text-align:center"><span class="lbl">OLEADA</span><div class="big" id="wave">1</div></div>
+        <div id="shields"></div>
+      </div>
+      <div class="col r">
+        <div style="text-align:right"><span class="lbl">WPM</span><div class="big" id="wpm">0</div></div>
+        <div id="focusWrap">
+          <div class="meter" id="focusMeter"><i></i></div>
+          <div id="focusHint">FOCUS</div>
+        </div>
+        <div id="muteTag">M&nbsp;·&nbsp;audio on</div>
+      </div>
+    </div>
+
+    <div id="banner"></div>
+    <div id="countdown"><div id="cdtext">3</div></div>
+
+    <!-- MENU -->
+    <div class="screen" id="menu">
+      <div class="title">NEBULA TYPER<small>PRO&nbsp;EDITION</small></div>
+      <div class="lead">
+        Teclea la <b>palabra</b> de cada nave para fijar el objetivo y destruirla.<br>
+        Encadena <b>combos</b>, llena el <b>FOCUS</b> y activa <b>OVERDRIVE</b> con <span class="k">ESPACIO</span>.<br>
+        Si una nave cruza la linea, pierdes un <b>escudo</b>. Sin escudos = fin.
+      </div>
+      <div class="diffRow" id="diffRow">
+        <button class="diff" data-diff="easy">EASY<small>4 escudos · lento</small></button>
+        <button class="diff active" data-diff="normal">NORMAL<small>3 escudos · estandar</small></button>
+        <button class="diff" data-diff="hard">HARD<small>1 escudo · rapido</small></button>
+      </div>
+      <button class="btn" id="startBtn">START</button>
+      <div class="best" id="menuBest"></div>
+      <div class="blink">ENTER&nbsp;para&nbsp;empezar&nbsp;·&nbsp;ESC&nbsp;pausa&nbsp;·&nbsp;M&nbsp;mute</div>
+    </div>
+
+    <!-- PAUSE -->
+    <div class="screen hidden" id="pause">
+      <div class="pmsg">PAUSA</div>
+      <div class="row">
+        <button class="btn" id="resumeBtn">RESUME</button>
+        <button class="btn ghost" id="muteBtn">MUTE</button>
+        <button class="btn ghost" id="quitBtn">SALIR</button>
+      </div>
+      <div class="blink">ESC&nbsp;para&nbsp;continuar</div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div class="screen hidden" id="over">
+      <div class="gomsg">GAME OVER</div>
+      <div class="gostats" id="overStats"></div>
+      <div class="row">
+        <button class="btn" id="restartBtn">RESTART</button>
+        <button class="btn ghost" id="menuBtn">MENU</button>
+      </div>
+      <div class="blink">ENTER&nbsp;para&nbsp;reintentar</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
