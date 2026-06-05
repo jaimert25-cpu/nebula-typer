@@ -22,6 +22,8 @@ function focusSink(){ if (isTouch){ try { ksink.focus({ preventScroll: true }); 
 // ----------------------------------------------------- TECLADO
 window.addEventListener('keydown', e => {
   const k = e.key;
+  // Si estas escribiendo tu nombre en el leaderboard, deja que el input mande
+  if (e.target && e.target.id === 'nameInput') return;
   // PAUSA: Espacio o Escape (teclas que NO son letras -> no chocan con el tecleo)
   if (k === ' ' || k === 'Escape'){
     e.preventDefault();

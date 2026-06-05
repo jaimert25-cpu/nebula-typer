@@ -8,6 +8,7 @@
 import { CONFIG } from './config.js';
 import { Audio } from './audio.js';
 import { Storage } from './storage.js';
+import { supabaseReady, submitScore, topScores } from './leaderboard.js';
 
 const $ = id => document.getElementById(id);
 
@@ -41,9 +42,49 @@ export function refreshMenuBest(){
   const b = Storage.get('nt_best', 0), w = Storage.get('nt_bestwpm', 0);
   $('menuBest').innerHTML = 'RECORD&nbsp;&nbsp;<span>' + b + '</span>&nbsp;·&nbsp;MEJOR&nbsp;WPM&nbsp;&nbsp;<span>' + w + '</span>';
 }
-export function showGameOver(html){
+function escapeHtml(s){
+  return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+}
+function renderLBMsg(msg){ document.getElementById('lbList').innerHTML = '<div class="lbMsg">' + msg + '</div>'; }
+async function renderLB(highlight){
+  const rows = await topScores(10);
+  if (!rows.length){ renderLBMsg('Aun no hay puntajes. ¡Se el primero! 🚀'); return; }
+  let html = '<div class="lbHead"><span>#</span><span>NOMBRE</span><span>SCORE</span><span>OLA</span></div>';
+  rows.forEach((r, i) => {
+    const me = (highlight && r.name === highlight) ? ' me' : '';
+    html += '<div class="lbRow' + me + '"><span>' + (i + 1) + '</span><span>' +
+            escapeHtml(r.name) + '</span><span>' + r.score + '</span><span>' + r.wave + '</span></div>';
+  });
+  document.getElementById('lbList').innerHTML = html;
+}
+
+export function showGameOver(html, run){
   $('overStats').innerHTML = html;
   showScreen('over');
+
+  const section = $('lbSection');
+  // Sin Supabase configurado: ocultamos el leaderboard, el juego sigue normal
+  if (!supabaseReady){ section.style.display = 'none'; return; }
+  section.style.display = '';
+
+  const input = $('nameInput'), submitBtn = $('submitBtn');
+  input.value = Storage.get('nt_name', '');
+  submitBtn.disabled = false; submitBtn.textContent = 'ENVIAR';
+  renderLBMsg('Cargando…');
+  renderLB();                       // muestra el top actual mientras tanto
+  try { input.focus(); } catch (e) {}
+  input.onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); submitBtn.click(); } };
+
+  let done = false;
+  submitBtn.onclick = async () => {
+    if (done) return;
+    const name = ((input.value || 'ANON').trim().toUpperCase().slice(0, 12)) || 'ANON';
+    Storage.set('nt_name', name);
+    submitBtn.disabled = true; submitBtn.textContent = 'ENVIANDO…';
+    const res = await submitScore({ name, score: run.score, wave: run.wave, wpm: run.wpm, accuracy: run.accuracy });
+    if (res.ok){ done = true; submitBtn.textContent = '¡ENVIADO!'; await renderLB(name); }
+    else { submitBtn.disabled = false; submitBtn.textContent = 'REINTENTAR'; renderLBMsg('Error al enviar: ' + res.error); }
+  };
 }
 export function updateHUD(G){
   el.score.textContent = G.score;

@@ -138,7 +138,7 @@ export const Game = {
       'OLEADA&nbsp;&nbsp;<span class="c">' + this.level + '</span>&nbsp;·&nbsp;WPM&nbsp;&nbsp;<span class="c' + (newWpm ? ' newbest' : '') + '">' + this.wpm + '</span><br>' +
       'PRECISION&nbsp;&nbsp;<span>' + acc + '%</span>&nbsp;·&nbsp;PERFECT&nbsp;&nbsp;<span>' + this.perfect + '</span><br>' +
       'MEJOR&nbsp;COMBO&nbsp;&nbsp;<span>x' + this.bestCombo + '</span>&nbsp;·&nbsp;RECORD&nbsp;&nbsp;<span class="c">' + Math.max(prevBest, this.score) + '</span>';
-    showGameOver(html);
+    showGameOver(html, { score: this.score, wave: this.level, wpm: this.wpm, accuracy: acc });
   },
 
   update(dt){
