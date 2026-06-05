@@ -5,6 +5,7 @@
 // =====================================================================
 
 import { ctx } from './viewport.js';
+import { currentWords } from './config.js';
 import { WORDS } from './config.js';
 
 export const rand  = (a, b) => a + Math.random() * (b - a);
@@ -30,6 +31,7 @@ export function roundRect(x, y, w, h, r){
 }
 
 export function pickWordByLen(min, max){
+  const WORDS = currentWords();           // lista del idioma activo
   let pool = WORDS.filter(w => w.length >= min && w.length <= max);
   if (pool.length < 5) pool = WORDS.filter(w => w.length <= max);
   if (pool.length === 0) pool = WORDS;

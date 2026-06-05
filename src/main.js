@@ -12,7 +12,7 @@ import { Game } from './game.js';
 import { render } from './render.js';
 import { updateHUD, setCd, refreshMenuBest } from './ui.js';
 import { Audio } from './audio.js';
-import { Storage } from './storage.js';
+import { Storage } from './storage.js';import { setLang } from './config.js';
 
 const $ = id => document.getElementById(id);
 const ksink = $('ksink');
@@ -71,6 +71,17 @@ document.querySelectorAll('.diff').forEach(b => {
     b.classList.add('active'); Game.diff = b.dataset.diff; Storage.set('nt_diff', Game.diff);
   };
   b.classList.toggle('active', b.dataset.diff === Game.diff);
+});// IDIOMA: ES / EN  (mismo patron que la dificultad)
+const savedLang = Storage.get('nt_lang') || 'es';
+setLang(savedLang);
+document.querySelectorAll('.lang').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.lang').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    setLang(b.dataset.lang);
+    Storage.set('nt_lang', b.dataset.lang);
+  };
+  b.classList.toggle('active', b.dataset.lang === savedLang);
 });
 
 // primer gesto -> arrancar audio ambiental

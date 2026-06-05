@@ -46,7 +46,15 @@
         <button class="diff active" data-diff="normal">NORMAL<small>3 escudos · estandar</small></button>
         <button class="diff" data-diff="hard">HARD<small>1 escudo · rapido</small></button>
       </div>
-      <button class="btn" id="startBtn">START</button>
+      <style>
+.langRow{display:flex;gap:10px;justify-content:center;margin:4px 0 14px}
+.lang{padding:6px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:#bfe9ff;font:600 13px/1 inherit;letter-spacing:2px;cursor:pointer}
+.lang.active{border-color:#39e0ff;color:#39e0ff;box-shadow:0 0 12px rgba(57,224,255,.45)}
+</style>
+<div class="langRow" id="langRow">
+  <button class="lang active" data-lang="es">ESPAÑOL</button>
+  <button class="lang" data-lang="en">ENGLISH</button>
+</div><button class="btn" id="startBtn">START</button>
       <div class="best" id="menuBest"></div>
       <div class="blink">ENTER&nbsp;empezar&nbsp;·&nbsp;ESPACIO/ESC&nbsp;pausa&nbsp;·&nbsp;SHIFT&nbsp;overdrive&nbsp;·&nbsp;M&nbsp;mute</div>
     </div>

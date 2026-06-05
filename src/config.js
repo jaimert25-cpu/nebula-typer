@@ -35,18 +35,45 @@ export const TYPES = {
   bonus:  { emojis: ['💎','🛰️','⭐'],      glow: '#ffd23f', spd: 0.92, base: 8,  name: 'bonus' }
 };
 
-export const WORDS = [
-  "sol","mar","luz","paz","rio","pan","sal","voz","rey","ley","gas","pez","ave","ojo","oso",
-  "ala","eco","uno","dos","gato","casa","mesa","sopa","lobo","pato","rana","mono","vaca","pelo",
-  "dedo","mano","nube","hoja","faro","nave","dado","jugo","taza","vino","foca","pera","rosa","lago",
-  "cielo","fuego","nieve","barco","piedra","fruta","playa","perro","tigre","cebra","pluma","libro",
-  "silla","queso","leche","pasta","arroz","huevo","fresa","salsa","ritmo","piano","cometa","ciudad",
-  "bosque","camino","puente","tomate","conejo","tesoro","pastel","helado","mango","viento","planeta",
-  "galaxia","meteoro","cohete","ventana","escuela","maestro","teclado","monitor","mensaje","palabra",
-  "ballena","caballo","tortuga","gallina","ardilla","cebolla","naranja","manzana","galleta","trompeta",
-  "orquesta","historia","pintura","aventura","castillo","tormenta","elefante","mariposa","programa",
-  "internet","pantalla","cuaderno","universo","nebulosa","gravedad","velocidad","distancia","escultura",
-  "serpiente","caballero","terremoto","chocolate","bicicleta","carretera","edificio","ascensor","escalera",
-  "explorador","ventilador","cocodrilo","dinosaurio","astronave","asteroide","linterna",
-  "telescopio","biblioteca","computadora","laboratorio","experimento","motocicleta","abecedario","ordenador"
-];
+export const WORDS = {
+  es: [
+    "sol","mar","luz","paz","rio","pan","sal","voz","rey","ley","gas","pez","ave","ojo","oso",
+    "ala","eco","uno","dos","gato","casa","mesa","sopa","lobo","pato","rana","mono","vaca","pelo",
+    "dedo","mano","nube","hoja","faro","nave","dado","jugo","taza","vino","foca","pera","rosa","lago",
+    "cielo","fuego","nieve","barco","piedra","fruta","playa","perro","tigre","cebra","pluma","libro",
+    "silla","queso","leche","pasta","arroz","huevo","fresa","salsa","ritmo","piano","cometa","ciudad",
+    "bosque","camino","puente","tomate","conejo","tesoro","pastel","helado","mango","viento","planeta",
+    "galaxia","meteoro","cohete","ventana","escuela","maestro","teclado","monitor","mensaje","palabra",
+    "ballena","caballo","tortuga","gallina","ardilla","cebolla","naranja","manzana","galleta","trompeta",
+    "orquesta","historia","pintura","aventura","castillo","tormenta","elefante","mariposa","programa",
+    "internet","pantalla","cuaderno","universo","nebulosa","gravedad","velocidad","distancia","escultura",
+    "serpiente","caballero","terremoto","chocolate","bicicleta","carretera","edificio","ascensor","escalera",
+    "explorador","ventilador","cocodrilo","dinosaurio","astronave","asteroide","linterna",
+    "telescopio","biblioteca","computadora","laboratorio","experimento","motocicleta","abecedario","ordenador"
+  ],
+  en: [
+    "sun","sea","sky","cat","dog","fox","owl","bee","ant","jet","cup","pen","key","map","bug",
+    "ice","eye","arm","fan","web","egg","fly","run","oak","bat",
+    "star","moon","ship","fire","snow","rain","tree","leaf","bird","frog","fish","lion","bear","wolf",
+    "duck","milk","cake","book","lamp","road","wind","gold","ring","song","rock","wave","ball","kite","nest","hill",
+    "space","light","cloud","ocean","river","beach","tiger","zebra","eagle","whale","horse","mouse","robot",
+    "comet","plane","music","piano","bread","apple","lemon","grape","candy","sugar","plant","storm","world",
+    "earth","glass","chair","table","house","pizza",
+    "planet","rocket","galaxy","meteor","school","pencil","window","dragon","turtle","rabbit","monkey",
+    "cherry","orange","banana","flower","forest","bridge","castle","jungle","guitar","violin","helmet","engine","garden",
+    "gravity","machine","journey","picture","history","teacher","monster","dolphin","penguin","octopus",
+    "leopard","cricket","blanket","diamond","crystal","station","mission","cluster","rainbow","volcano",
+    "keyboard","elephant","dinosaur","mountain","sandwich","hospital","airplane","asteroid","universe",
+    "notebook","treasure","sunshine","starfish","mushroom","building","umbrella","scissors",
+    "telescope","adventure","chocolate","butterfly","crocodile","alligator","astronaut","satellite",
+    "lightning","hurricane","orchestra","spaceship",
+    "laboratory","basketball","helicopter","strawberry","playground","friendship","lighthouse","microscope",
+    "watermelon","experiment","caterpillar","grasshopper","exploration","observatory","countryside",
+    "refrigerator","intelligence"
+  ]
+};
+
+// idioma activo de las palabras ('es' o 'en')
+export let lang = 'es';
+export function setLang(v){ if (WORDS[v]) lang = v; }
+export function currentWords(){ return WORDS[lang]; }
