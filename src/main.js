@@ -13,6 +13,7 @@ import { render } from './render.js';
 import { updateHUD, setCd, refreshMenuBest } from './ui.js';
 import { Audio } from './audio.js';
 import { Storage } from './storage.js';import { setLang } from './config.js';
+import { Keyboard } from './keyboard.js';
 
 const $ = id => document.getElementById(id);
 const ksink = $('ksink');
@@ -83,6 +84,37 @@ document.querySelectorAll('.lang').forEach(b => {
   };
   b.classList.toggle('active', b.dataset.lang === savedLang);
 });
+// ----------------------------------------------------- TECLADO GUIA
+const isTouchUI = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+const savedKb = Storage.get('nt_kb') || 'latam';
+let guideOn = Storage.get('nt_guide') !== 'off';   // por defecto encendido
+Keyboard.build(savedKb);
+Keyboard.setEnabled(guideOn);
+
+document.querySelectorAll('.kbLayout').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.kbLayout').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    Keyboard.setLayout(b.dataset.kb);
+    Storage.set('nt_kb', b.dataset.kb);
+  };
+  b.classList.toggle('active', b.dataset.kb === savedKb);
+});
+
+const guideBtn = $('guideToggle');
+function reflectGuide(){
+  guideBtn.textContent = 'TECLADO GUIA: ' + (guideOn ? 'ON' : 'OFF');
+  guideBtn.classList.toggle('active', guideOn);
+}
+guideBtn.onclick = () => {
+  guideOn = !guideOn;
+  Keyboard.setEnabled(guideOn);
+  Storage.set('nt_guide', guideOn ? 'on' : 'off');
+  reflectGuide();
+};
+reflectGuide();
+
+if (isTouchUI){ const kr = $('kbRow'); if (kr) kr.style.display = 'none'; guideBtn.style.display = 'none'; }
 
 // primer gesto -> arrancar audio ambiental
 function firstGesture(){
@@ -113,6 +145,7 @@ function frame(now){
   if (Audio.isReady()) Audio.tickMusic();
   render();
   updateHUD(Game);
+  Keyboard.update(Game.state);
   requestAnimationFrame(frame);
 }
 
