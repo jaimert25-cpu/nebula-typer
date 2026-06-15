@@ -99,6 +99,16 @@ export const Game = {
     this.addFocus(CONFIG.focusPerWord);
     Audio.shoot(); Audio.boom(); this.shake = Math.min(9, 3 + this.combo * 0.3);
 
+    if (e.type === 'boss' && e.hp > 1){
+      e.hp--; e.word = e.words[e.words.length - e.hp]; e.typed = 0; e.mistakes = 0; active = null;
+      FX.text('GOLPE ' + (e.maxhp - e.hp) + '/' + e.maxhp, e.x, e.y - 100, '#ff5d2d', 14);
+      return;
+    }
+    if (e.type === 'boss'){
+      this.addScore(400); FX.text('+400', e.x, e.y - 100, '#ffd23f', 18);
+      banner('JEFE DERROTADO', '#ff5d2d');
+      const pu = makeEnemy('power', this.level, this.diff); pu.x = e.x; pu.y = e.y; enemies.push(pu);
+    }
     if (e.type === 'bonus'){
       if (this.shields < this.maxShields){ this.shields++; FX.text('+ESCUDO', e.x, e.y - 72, '#39e0ff', 13); Audio.shield(); }
       else { this.addFocus(40); FX.text('+FOCUS', e.x, e.y - 72, '#c46bff', 13); }
@@ -108,7 +118,8 @@ export const Game = {
 
     if (this.enemiesDestroyed >= this.level * CONFIG.enemiesPerWave){
       this.level++; Audio.musicLevel(this.level); Audio.level();
-      banner('OLEADA ' + this.level, '#ffd23f');
+      if (this.level % 5 === 0) banner('JEFE! OLEADA ' + this.level, '#ff5d2d');
+      else banner('OLEADA ' + this.level, '#ffd23f');
     }
   },
 

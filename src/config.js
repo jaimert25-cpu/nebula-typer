@@ -33,7 +33,8 @@ export const TYPES = {
   fast:   { emojis: ['🛸','🚀'],          glow: '#7CFF4F', spd: 1.85, base: 16, name: 'fast' },
   tank:   { emojis: ['🤖','💀','👹'],     glow: '#ff2d95', spd: 0.58, base: 34, name: 'tank' },
  bonus:  { emojis: ['💎','🛰️','⭐'], glow: '#ffd23f', spd: 0.92, base: 8, name: 'bonus' },
-  power:  { emojis: ['⚡','🔋','✨'], glow: '#c46bff', spd: 0.92, base: 8, name: 'power' }
+  power:  { emojis: ['⚡','🔋','✨'], glow: '#c46bff', spd: 0.92, base: 8, name: 'power' },
+  boss:   { emojis: ['👹','👾','🛸'], glow: '#ff5d2d', spd: 0.42, base: 60, name: 'boss' }
 };
 
 export const WORDS = {

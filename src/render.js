@@ -17,9 +17,21 @@ function drawEnemies(){
   ctx.textBaseline = 'middle';
   for (const e of enemies){
     const isA = (e === active), bob = Math.sin(e.bob) * 2;
+
+    // emoji: el jefe se dibuja MUCHO mas grande (80px) y centrado
     ctx.save(); ctx.shadowColor = e.glow; ctx.shadowBlur = isA ? 22 : 12;
-    ctx.font = (isA ? 34 : 28) + 'px serif'; ctx.textAlign = 'center';
+    if (e.type === 'boss'){ ctx.textAlign = 'center'; ctx.font = '80px serif'; }
     ctx.fillText(e.emoji, e.x, e.y - view.wordPx - 6 + bob); ctx.restore();
+
+    // barra de vida del jefe (un segmento por palabra restante)
+    if (e.type === 'boss'){
+      const gap = 4, sw = 26, sh = 6, totalW = e.maxhp * sw + (e.maxhp - 1) * gap;
+      let hx = e.x - totalW / 2; const hy = e.y - view.wordPx - 92;
+      for (let s = 0; s < e.maxhp; s++){
+        ctx.fillStyle = (s < e.hp) ? '#ff5d2d' : 'rgba(255,93,45,.22)';
+        ctx.fillRect(hx, hy, sw, sh); hx += sw + gap;
+      }
+    }
 
     ctx.font = '700 ' + view.wordPx + 'px "Share Tech Mono",monospace'; ctx.textAlign = 'left';
     const w = ctx.measureText(e.word).width, padX = 10, h = view.wordPx + 10, bx = e.x - w / 2 - padX, by = e.y - h / 2;
