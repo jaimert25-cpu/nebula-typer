@@ -13,6 +13,72 @@ import { Stars } from './stars.js';
 import { enemies } from './enemies.js';
 import { Game, active, shipAngle, lasers } from './game.js';
 
+// --- PLANETA (representa tus vidas) ---------------------------------
+// Posiciones FIJAS para que el dano no parpadee entre frames.
+// Cada numero es un angulo (radianes) sobre la curva visible del planeta.
+const PLANET_LAND   = [[-0.5, 0.17, 0.3], [0.42, 0.13, -0.4], [0.02, 0.11, 0.1], [-0.92, 0.10, 0.6]];
+const PLANET_SCORCH = [-0.7, 0.55, -0.15, 0.95, -1.0, 0.25, 0.82, -0.42];
+const PLANET_CRACK  = [-0.55, 0.66, -0.05, 1.0, -0.9, 0.34];
+
+function drawPlanet(){
+  if (!Game.maxShields) return;
+  const r = Math.max(0, Math.min(1, Game.shields / Game.maxShields)); // 1 = sano, 0 = destruido
+  const dmg = 1 - r;
+  const R = view.W * 0.95;
+  const cx = view.W / 2;
+  const cy = view.H + R - Math.max(80, view.H * 0.14);  // solo asoma la parte de arriba (el "horizonte")
+  const lerp = (a, b) => Math.round(a + (b - a) * dmg);
+
+  ctx.save();
+
+  // cuerpo + atmosfera (el halo se apaga conforme muere)
+  ctx.shadowColor = 'rgba(' + lerp(90,170) + ',' + lerp(200,80) + ',' + lerp(255,60) + ',1)';
+  ctx.shadowBlur = 8 + 34 * r;
+  const g = ctx.createRadialGradient(cx, cy - R + R * 0.18, R * 0.08, cx, cy, R);
+  g.addColorStop(0,   'rgb(' + lerp(80,95)  + ',' + lerp(195,58) + ',' + lerp(225,52) + ')');
+  g.addColorStop(0.6, 'rgb(' + lerp(30,45)  + ',' + lerp(95,26)  + ',' + lerp(150,28) + ')');
+  g.addColorStop(1,   'rgb(' + lerp(10,20)  + ',' + lerp(40,10)  + ',' + lerp(80,14)  + ')');
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // recortar al disco para que continentes/grietas no se salgan
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.clip();
+
+  // continentes (se apagan con el dano)
+  ctx.globalAlpha = 0.5 - 0.35 * dmg;
+  ctx.fillStyle = 'rgb(' + lerp(40,42) + ',' + lerp(120,42) + ',' + lerp(80,38) + ')';
+  for (const c of PLANET_LAND){
+    const lx = cx + R * Math.sin(c[0]), ly = cy - R * Math.cos(c[0]);
+    ctx.beginPath(); ctx.ellipse(lx, ly, R * c[1], R * c[1] * 0.6, c[2], 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // manchas quemadas (aparecen segun el dano)
+  const nS = Math.round(dmg * PLANET_SCORCH.length);
+  for (let i = 0; i < nS; i++){
+    const th = PLANET_SCORCH[i];
+    const sx = cx + R * Math.sin(th), sy = cy - R * Math.cos(th), rad = R * 0.11;
+    const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, rad);
+    sg.addColorStop(0, 'rgba(16,6,4,.96)'); sg.addColorStop(1, 'rgba(16,6,4,0)');
+    ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(sx, sy, rad, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // grietas encendidas (aparecen segun el dano; laten y brillan al recibir golpe)
+  const nC = Math.round(dmg * PLANET_CRACK.length);
+  const pulse = Math.min(1, 0.55 + 0.35 * Math.sin(performance.now() / 220) + Game.damageFlash);
+  for (let i = 0; i < nC; i++){
+    const th = PLANET_CRACK[i];
+    let zx = cx + R * Math.sin(th), zy = cy - R * Math.cos(th);
+    ctx.save(); ctx.shadowColor = '#ff7b2d'; ctx.shadowBlur = 12;
+    ctx.strokeStyle = 'rgba(255,140,40,' + pulse + ')'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(zx, zy);
+    for (let k = 1; k <= 6; k++){ zx += (k % 2 ? 9 : -9); zy += 15; ctx.lineTo(zx, zy); }
+    ctx.stroke(); ctx.restore();
+  }
+
+  ctx.restore();
+}
+
 function drawEnemies(){
   ctx.textBaseline = 'middle';
   for (const e of enemies){
@@ -112,6 +178,7 @@ export function render(){
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
   Stars.draw(Game.overdrive > 0);
+  drawPlanet();
   drawDefenseLine();
   drawLasers();
   drawEnemies();
