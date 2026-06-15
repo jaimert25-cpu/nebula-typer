@@ -62,6 +62,7 @@ $('stage').addEventListener('pointerdown', () => {
 $('startBtn').onclick   = () => { Game.beginCountdown(); focusSink(); };
 $('restartBtn').onclick = () => { Game.beginCountdown(); focusSink(); };
 $('resumeBtn').onclick  = () => Game.resume();
+$('restartPauseBtn').onclick = () => { Game.beginCountdown(); focusSink(); };
 $('quitBtn').onclick    = () => Game.toMenu();
 $('menuBtn').onclick     = () => Game.toMenu();
 $('muteBtn').onclick     = () => { Audio.init(); Audio.setMuted(!Audio.muted); $('muteBtn').textContent = Audio.muted ? 'UNMUTE' : 'MUTE'; };
@@ -69,7 +70,7 @@ $('muteBtn').onclick     = () => { Audio.init(); Audio.setMuted(!Audio.muted); $
 document.querySelectorAll('.diff').forEach(b => {
   b.onclick = () => {
     document.querySelectorAll('.diff').forEach(x => x.classList.remove('active'));
-    b.classList.add('active'); Game.diff = b.dataset.diff; Storage.set('nt_diff', Game.diff);
+    b.classList.add('active'); Game.diff = b.dataset.diff; Storage.set('nt_diff', Game.diff); refreshMenuBest();
   };
   b.classList.toggle('active', b.dataset.diff === Game.diff);
 });// IDIOMA: ES / EN  (mismo patron que la dificultad)

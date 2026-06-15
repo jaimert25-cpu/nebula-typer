@@ -23,6 +23,15 @@ function drawEnemies(){
 
     ctx.font = '700 ' + view.wordPx + 'px "Share Tech Mono",monospace'; ctx.textAlign = 'left';
     const w = ctx.measureText(e.word).width, padX = 10, h = view.wordPx + 10, bx = e.x - w / 2 - padX, by = e.y - h / 2;
+    if (e.type === 'power'){
+      const pt = performance.now() / 1000, pulse = 0.5 + 0.5 * Math.sin(pt * 6 + e.bob), m = 6 + 4 * pulse;
+      ctx.save();
+      ctx.shadowColor = e.glow; ctx.shadowBlur = 16 + 16 * pulse;
+      ctx.strokeStyle = e.glow; ctx.lineWidth = 2 + 1.5 * pulse; ctx.globalAlpha = 0.55 + 0.4 * pulse;
+      roundRect(bx - m, by - m, w + padX * 2 + m * 2, h + m * 2, 11);
+      ctx.stroke();
+      ctx.restore();
+    }
     roundRect(bx, by, w + padX * 2, h, 7);
     ctx.fillStyle = e.errorT > 0 ? 'rgba(60,10,30,.95)' : (isA ? 'rgba(6,26,36,.94)' : 'rgba(8,12,28,.8)'); ctx.fill();
     ctx.lineWidth = 2;

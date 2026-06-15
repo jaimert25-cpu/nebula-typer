@@ -32,7 +32,8 @@ export const TYPES = {
   normal: { emojis: ['👾','👽'],          glow: '#39e0ff', spd: 1.00, base: 10, name: 'normal' },
   fast:   { emojis: ['🛸','🚀'],          glow: '#7CFF4F', spd: 1.85, base: 16, name: 'fast' },
   tank:   { emojis: ['🤖','💀','👹'],     glow: '#ff2d95', spd: 0.58, base: 34, name: 'tank' },
-  bonus:  { emojis: ['💎','🛰️','⭐'],      glow: '#ffd23f', spd: 0.92, base: 8,  name: 'bonus' }
+ bonus:  { emojis: ['💎','🛰️','⭐'], glow: '#ffd23f', spd: 0.92, base: 8, name: 'bonus' },
+  power:  { emojis: ['⚡','🔋','✨'], glow: '#c46bff', spd: 0.92, base: 8, name: 'power' }
 };
 
 export const WORDS = {
@@ -77,3 +78,11 @@ export const WORDS = {
 export let lang = 'es';
 export function setLang(v){ if (WORDS[v]) lang = v; }
 export function currentWords(){ return WORDS[lang]; }
+// Power-ups: cada uno con su palabra (es/en) y el efecto que activa.
+export const POWERS = [
+  { fx: 'shield', es: 'escudo',  en: 'shield' },
+  { fx: 'clear',  es: 'limpiar', en: 'clear'  },
+  { fx: 'focus',  es: 'energia', en: 'energy' },
+  { fx: 'freeze', es: 'hielo',   en: 'freeze' },
+  { fx: 'x2',     es: 'doble',   en: 'double' }
+];

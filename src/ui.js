@@ -39,15 +39,17 @@ export function setCd(t, go){
   e.style.animation = 'none'; void e.offsetWidth; e.style.animation = 'pop .5s';
 }
 export function refreshMenuBest(){
-  const b = Storage.get('nt_best', 0), w = Storage.get('nt_bestwpm', 0);
-  $('menuBest').innerHTML = 'RECORD&nbsp;&nbsp;<span>' + b + '</span>&nbsp;·&nbsp;MEJOR&nbsp;WPM&nbsp;&nbsp;<span>' + w + '</span>';
+  const diff = Storage.get('nt_diff', 'normal');
+  const label = (CONFIG.diff[diff] || {}).label || diff.toUpperCase();
+  const b = Storage.get('nt_best_' + diff, 0), w = Storage.get('nt_bestwpm_' + diff, 0);
+  $('menuBest').innerHTML = 'RECORD ' + label + '&nbsp;&nbsp;<span>' + b + '</span>&nbsp;·&nbsp;MEJOR&nbsp;WPM&nbsp;&nbsp;<span>' + w + '</span>';
 }
 function escapeHtml(s){
   return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 }
 function renderLBMsg(msg){ document.getElementById('lbList').innerHTML = '<div class="lbMsg">' + msg + '</div>'; }
-async function renderLB(highlight){
-  const rows = await topScores(10);
+async function renderLB(diff, highlight){
+  const rows = await topScores(diff, 10);
   if (!rows.length){ renderLBMsg('Aun no hay puntajes. ¡Se el primero! 🚀'); return; }
   let html = '<div class="lbHead"><span>#</span><span>NOMBRE</span><span>SCORE</span><span>OLA</span></div>';
   rows.forEach((r, i) => {
@@ -71,7 +73,7 @@ export function showGameOver(html, run){
   input.value = Storage.get('nt_name', '');
   submitBtn.disabled = false; submitBtn.textContent = 'ENVIAR';
   renderLBMsg('Cargando…');
-  renderLB();                       // muestra el top actual mientras tanto
+  renderLB(run.diff);                       // muestra el top actual mientras tanto
   try { input.focus(); } catch (e) {}
   input.onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); submitBtn.click(); } };
 
@@ -81,8 +83,8 @@ export function showGameOver(html, run){
     const name = ((input.value || 'ANON').trim().toUpperCase().slice(0, 12)) || 'ANON';
     Storage.set('nt_name', name);
     submitBtn.disabled = true; submitBtn.textContent = 'ENVIANDO…';
-    const res = await submitScore({ name, score: run.score, wave: run.wave, wpm: run.wpm, accuracy: run.accuracy });
-    if (res.ok){ done = true; submitBtn.textContent = '¡ENVIADO!'; await renderLB(name); }
+    const res = await submitScore({ name, score: run.score, wave: run.wave, wpm: run.wpm, accuracy: run.accuracy, diff: run.diff });
+    if (res.ok){ done = true; submitBtn.textContent = '¡ENVIADO!'; await renderLB(run.diff, name); }
     else { submitBtn.disabled = false; submitBtn.textContent = 'REINTENTAR'; renderLBMsg('Error al enviar: ' + res.error); }
   };
 }

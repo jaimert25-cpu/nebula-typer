@@ -30,7 +30,7 @@ export const Game = {
   state: 'menu',                 // menu | countdown | playing | paused | over
   diff: Storage.get('nt_diff', 'normal'),
   score: 0, level: 1, shields: 3, maxShields: 3, combo: 0, bestCombo: 0,
-  comboTimer: 0, focus: 0, overdrive: 0, enemyTime: 1,
+  comboTimer: 0, focus: 0, overdrive: 0, enemyTime: 1, freeze: 0, x2: 0,
   enemiesDestroyed: 0, correctChars: 0, totalKeys: 0, wordsDone: 0, perfect: 0,
   startTime: 0, wpm: 0, shake: 0, damageFlash: 0,
   cd: { i: 0, t: 0 }, steps: ['3', '2', '1', 'GO!'],
@@ -38,7 +38,7 @@ export const Game = {
   resetRun(){
     const d = CONFIG.diff[this.diff];
     this.score = 0; this.level = 1; this.maxShields = d.shields; this.shields = d.shields;
-    this.combo = 0; this.bestCombo = 0; this.comboTimer = 0; this.focus = 0; this.overdrive = 0; this.enemyTime = 1;
+    this.combo = 0; this.bestCombo = 0; this.comboTimer = 0; this.focus = 0; this.overdrive = 0; this.enemyTime = 1; this.freeze = 0; this.x2 = 0;
     this.enemiesDestroyed = 0; this.correctChars = 0; this.totalKeys = 0; this.wordsDone = 0; this.perfect = 0;
     this.wpm = 0; this.shake = 0; this.damageFlash = 0;
     enemies.length = 0; lasers.length = 0; active = null; shipAngle = -Math.PI / 2;
@@ -87,7 +87,7 @@ export const Game = {
     this.comboTimer = Math.max(CONFIG.comboWindowMin, CONFIG.comboWindow - this.level * 0.18);
     const mult = 1 + Math.floor(this.combo / 5) * 0.5;
     const od = this.overdrive > 0 ? 2 : 1;
-    const gain = Math.round((e.T.base + e.word.length * 4) * mult * od);
+    const gain = Math.round((e.T.base + e.word.length * 4) * mult * od * (this.x2 > 0 ? 2 : 1));
     this.addScore(gain);
     fireLaser(e); FX.explosion(e.x, e.y, e.glow);
     FX.text('+' + gain, e.x, e.y - 10, '#7CFF4F');
@@ -103,6 +103,7 @@ export const Game = {
       if (this.shields < this.maxShields){ this.shields++; FX.text('+ESCUDO', e.x, e.y - 72, '#39e0ff', 13); Audio.shield(); }
       else { this.addFocus(40); FX.text('+FOCUS', e.x, e.y - 72, '#c46bff', 13); }
     }
+    if (e.type === 'power') this.applyPower(e);
     e.dead = true; active = null; this.wordsDone++; this.enemiesDestroyed++;
 
     if (this.enemiesDestroyed >= this.level * CONFIG.enemiesPerWave){
@@ -117,6 +118,22 @@ export const Game = {
     banner('OVERDRIVE', '#c46bff'); Audio.overdrive();
   },
 
+applyPower(e){
+    if (e.power === 'shield'){
+      if (this.shields < this.maxShields){ this.shields++; banner('+1 ESCUDO', '#39e0ff'); Audio.shield(); }
+      else { this.addFocus(40); banner('+ FOCUS', '#c46bff'); }
+    } else if (e.power === 'clear'){
+      for (const en of enemies){ if (!en.dead && en !== e){ FX.explosion(en.x, en.y, en.glow); en.dead = true; } }
+      banner('PANTALLA LIMPIA', '#ff2d95'); Audio.boom();
+    } else if (e.power === 'focus'){
+     this.focus = CONFIG.focusMax; banner('ENERGIA LLENA', '#c46bff');
+    } else if (e.power === 'freeze'){
+      this.freeze = 3.5; banner('CONGELADO', '#39e0ff');
+    } else if (e.power === 'x2'){
+      this.x2 = 8; banner('x2 PUNTOS', '#ffd23f');
+    }
+  },
+
   damage(e){
     this.shields--; this.combo = 0; this.damageFlash = 0.5; this.shake = 12;
     FX.explosion(e.x, e.y, '#ff2d95'); Audio.hurt();
@@ -127,10 +144,10 @@ export const Game = {
   gameOver(){
     this.state = 'over'; Audio.musicOn(false); Audio.over(); this.shake = 14;
     const acc = this.totalKeys > 0 ? Math.round((this.correctChars / this.totalKeys) * 100) : 100;
-    const prevBest = Storage.get('nt_best', 0), prevWpm = Storage.get('nt_bestwpm', 0);
+    const prevBest = Storage.get('nt_best_' + this.diff, 0), prevWpm = Storage.get('nt_bestwpm_' + this.diff, 0);
     const newBest = this.score > prevBest, newWpm = this.wpm > prevWpm;
-    if (newBest) Storage.set('nt_best', this.score);
-    if (newWpm) Storage.set('nt_bestwpm', this.wpm);
+    if (newBest) Storage.set('nt_best_' + this.diff, this.score);
+    if (newWpm) Storage.set('nt_bestwpm_' + this.diff, this.wpm);
     Storage.set('nt_plays', Storage.get('nt_plays', 0) + 1);
     const html =
       (newBest ? '<div class="newbest">¡NUEVO RECORD!</div>' : '') +
@@ -138,7 +155,7 @@ export const Game = {
       'OLEADA&nbsp;&nbsp;<span class="c">' + this.level + '</span>&nbsp;·&nbsp;WPM&nbsp;&nbsp;<span class="c' + (newWpm ? ' newbest' : '') + '">' + this.wpm + '</span><br>' +
       'PRECISION&nbsp;&nbsp;<span>' + acc + '%</span>&nbsp;·&nbsp;PERFECT&nbsp;&nbsp;<span>' + this.perfect + '</span><br>' +
       'MEJOR&nbsp;COMBO&nbsp;&nbsp;<span>x' + this.bestCombo + '</span>&nbsp;·&nbsp;RECORD&nbsp;&nbsp;<span class="c">' + Math.max(prevBest, this.score) + '</span>';
-    showGameOver(html, { score: this.score, wave: this.level, wpm: this.wpm, accuracy: acc });
+    showGameOver(html, { score: this.score, wave: this.level, wpm: this.wpm, accuracy: acc, diff: this.diff });
   },
 
   update(dt){
@@ -157,6 +174,8 @@ export const Game = {
 
     if (this.state !== 'playing') return;
 
+    if (this.freeze > 0) this.freeze = Math.max(0, this.freeze - dt);
+    if (this.x2 > 0) this.x2 = Math.max(0, this.x2 - dt);
     if (this.combo > 0){ this.comboTimer -= dt; if (this.comboTimer <= 0) this.combo = 0; }
 
     Director.update(dt, this.level, this.diff);
@@ -165,7 +184,7 @@ export const Game = {
     for (const e of enemies){
       e.y += e.speed * dt * et; e.bob += dt * 4; e.errorT = Math.max(0, e.errorT - dt);
       if (e.y >= defY){
-        if (e.type === 'bonus'){ e.dead = true; }       // bonus perdido: sin castigo
+        if (e.type === 'bonus' || e.type === 'power'){ e.dead = true; }       // bonus perdido: sin castigo
         else { this.damage(e); if (this.state !== 'playing') return; }
       }
     }
